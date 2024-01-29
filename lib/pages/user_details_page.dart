@@ -196,8 +196,7 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
               hintText: 'Enter Text',
               border: OutlineInputBorder(
                 borderSide: BorderSide(
-                  color: Colors.grey
-                      .withOpacity(0.1), // Border color when not focused
+                  color: Colors.grey.withOpacity(0.1),
                   width: 1.0,
                 ),
               ),
