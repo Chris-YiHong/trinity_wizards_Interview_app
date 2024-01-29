@@ -75,123 +75,141 @@ class UserDetailsPage extends StatelessWidget {
           ),
           Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    const Expanded(
-                      flex: 2,
-                      child: Text(
-                        'First Name',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    Expanded(
-                      flex: 4,
-                      child: Text(
-                        user.firstName,
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    ),
-                  ],
-                ),
+              const SizedBox(
+                height: 8,
               ),
-              Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    const Expanded(
-                      flex: 2,
-                      child: Text(
-                        'Last Name',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    Expanded(
-                      flex: 4,
-                      child: Text(
-                        user.lastName,
-                        style: const TextStyle(
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+              TextFieldWidget(
+                text: user.firstName,
+                title: 'FisrtName',
+              ),
+              const SizedBox(
+                height: 4,
+              ),
+              const Padding(
+                padding: EdgeInsets.only(left: 16),
+                child: Divider(),
+              ),
+              const SizedBox(
+                height: 4,
+              ),
+              TextFieldWidget(
+                text: user.lastName,
+                title: 'Last Name',
+              ),
+              const Padding(
+                padding: EdgeInsets.only(left: 16),
+                child: Divider(),
               ),
             ],
           ),
           const TitleWidget(title: 'Sub Information'),
-          const Divider(
-            height: 1,
-            color: Colors.grey,
-          ),
           Column(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    const Expanded(
-                      flex: 2,
-                      child: Text(
-                        'Email',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    Expanded(
-                      flex: 4,
-                      child: Text(
-                        user.email,
-                        style: const TextStyle(fontSize: 16),
-                      ),
-                    ),
-                  ],
-                ),
+              const SizedBox(
+                height: 8,
               ),
-              Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    const Expanded(
-                      flex: 2,
-                      child: Text(
-                        'DOB',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    const SizedBox(
-                      width: 8,
-                    ),
-                    Expanded(
-                      flex: 4,
-                      child: Text(
-                        user.dob,
-                        style: const TextStyle(
-                          fontSize: 16,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+              TextFieldWidget(
+                text: user.email,
+                title: 'Email',
+              ),
+              const SizedBox(
+                height: 4,
+              ),
+              const Padding(
+                padding: EdgeInsets.only(left: 16),
+                child: Divider(),
+              ),
+              const SizedBox(
+                height: 4,
+              ),
+              TextFieldWidget(
+                text: user.dob,
+                title: 'DOB',
+                icon: Icons.calendar_month,
+              ),
+              const Padding(
+                padding: EdgeInsets.only(left: 16),
+                child: Divider(),
               ),
             ],
           ),
         ],
       ),
+    );
+  }
+}
+
+class TextFieldWidget extends StatefulWidget {
+  const TextFieldWidget(
+      {super.key, required this.title, required this.text, this.icon});
+  final String title;
+  final String text;
+  final IconData? icon;
+
+  @override
+  State<TextFieldWidget> createState() => _TextFieldWidgetState();
+}
+
+class _TextFieldWidgetState extends State<TextFieldWidget> {
+  late TextEditingController _textEditingController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _textEditingController = TextEditingController(text: widget.text);
+  }
+
+  @override
+  void dispose() {
+    _textEditingController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const SizedBox(
+          width: 8,
+        ),
+        Expanded(
+          flex: 2,
+          child: Text(
+            widget.title,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+        ),
+        const SizedBox(
+          width: 8,
+        ),
+        Expanded(
+          flex: 4,
+          child: TextField(
+            controller: _textEditingController,
+            style: const TextStyle(fontSize: 16),
+            decoration: InputDecoration(
+              suffixIcon: Icon(
+                widget.icon,
+                color: Colors.grey,
+              ),
+              hintText: 'Enter Text',
+              border: OutlineInputBorder(
+                borderSide: BorderSide(
+                  color: Colors.grey
+                      .withOpacity(0.1), // Border color when not focused
+                  width: 1.0,
+                ),
+              ),
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 16.0, horizontal: 12.0),
+            ),
+          ),
+        ),
+        const SizedBox(
+          width: 8,
+        ),
+      ],
     );
   }
 }
