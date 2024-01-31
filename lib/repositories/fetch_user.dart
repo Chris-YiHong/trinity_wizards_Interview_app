@@ -10,6 +10,11 @@ Future<List<User>> fetchUsers() async {
     final directory = await getApplicationDocumentsDirectory();
     final file = File('${directory.path}/data.json');
 
+    if (!file.existsSync()) {
+      // File not found, copy from assets
+      await _copyDataFromAsset(file);
+    }
+
     String jsonString = await file.readAsString();
 
     List<dynamic> jsonData = jsonDecode(jsonString);
@@ -19,6 +24,17 @@ Future<List<User>> fetchUsers() async {
     return users;
   } catch (e) {
     print('Error fetching users: $e');
+    rethrow;
+  }
+}
+
+Future<void> _copyDataFromAsset(File destFile) async {
+  try {
+    final data = await rootBundle.load('assets/data.json');
+    final bytes = data.buffer.asUint8List();
+    await destFile.writeAsBytes(bytes);
+  } catch (e) {
+    print('Error copying data from asset: $e');
     rethrow;
   }
 }
