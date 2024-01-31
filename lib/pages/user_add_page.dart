@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:trinity_wizards_interview_app/constants/app_color.dart';
 import 'package:trinity_wizards_interview_app/models/user.dart';
+import 'package:trinity_wizards_interview_app/pages/user_details_page.dart';
 import 'package:trinity_wizards_interview_app/repositories/fetch_user.dart';
 import 'package:intl/intl.dart';
 import 'package:trinity_wizards_interview_app/widgets/date_picker_text_field.dart';
 import 'package:trinity_wizards_interview_app/widgets/text_field.dart';
 
-class UserDetailsPage extends StatefulWidget {
-  final User user;
+class NewRecordPage extends StatefulWidget {
   final Function onRefresh;
 
-  const UserDetailsPage(
-      {super.key, required this.user, required this.onRefresh});
+  const NewRecordPage({Key? key, required this.onRefresh}) : super(key: key);
 
   @override
-  State<UserDetailsPage> createState() => _UserDetailsPageState();
+  _NewRecordPageState createState() => _NewRecordPageState();
 }
 
-class _UserDetailsPageState extends State<UserDetailsPage> {
-  late TextEditingController _fisrtNameTextEditingController;
+class _NewRecordPageState extends State<NewRecordPage> {
+  late TextEditingController _firstNameTextEditingController;
   late TextEditingController _lastNameTextEditingController;
   late TextEditingController _emailTextEditingController;
   late TextEditingController _dobTextEditingController;
@@ -30,19 +29,16 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
   @override
   void initState() {
     super.initState();
-    initialDate = dateFormat.parse(widget.user.dob);
-    _fisrtNameTextEditingController =
-        TextEditingController(text: widget.user.firstName);
-    _lastNameTextEditingController =
-        TextEditingController(text: widget.user.lastName);
-    _emailTextEditingController =
-        TextEditingController(text: widget.user.email);
-    _dobTextEditingController = TextEditingController(text: widget.user.dob);
+    initialDate = DateTime.now();
+    _firstNameTextEditingController = TextEditingController();
+    _lastNameTextEditingController = TextEditingController();
+    _emailTextEditingController = TextEditingController();
+    _dobTextEditingController = TextEditingController();
   }
 
   @override
   void dispose() {
-    _fisrtNameTextEditingController.dispose();
+    _firstNameTextEditingController.dispose();
     _lastNameTextEditingController.dispose();
     _emailTextEditingController.dispose();
     _dobTextEditingController.dispose();
@@ -50,17 +46,19 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
     super.dispose();
   }
 
-  Future<void> _updateUser() async {
+  Future<void> _createNewRecord() async {
     try {
       setState(() => loading = true);
 
-      User newUser = widget.user.copyWith(
-        firstName: _fisrtNameTextEditingController.text,
+      User newUser = User(
+        id: '', // The ID will be generated automatically
+        firstName: _firstNameTextEditingController.text,
         lastName: _lastNameTextEditingController.text,
         email: _emailTextEditingController.text,
         dob: _dobTextEditingController.text,
       );
-      await updateUser(newUser);
+
+      await addNewUser(newUser);
       error = '';
     } catch (e) {
       error = e.toString();
@@ -85,7 +83,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
             ),
             const SizedBox(height: 20),
             OutlinedButton(
-              onPressed: _updateUser,
+              onPressed: _createNewRecord,
               child: const Text(
                 'Retry',
                 style: TextStyle(fontSize: 18),
@@ -123,10 +121,10 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
               ),
               TextButton(
                 onPressed: () async {
-                  await _updateUser();
+                  await _createNewRecord();
                 },
                 child: const Text(
-                  'Save',
+                  'Add',
                   style: TextStyle(
                     color: AppColors.primaryColor,
                     fontSize: 16,
@@ -173,9 +171,9 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                         height: 8,
                       ),
                       TextFieldWidget(
-                        text: widget.user.firstName,
-                        title: 'FisrtName',
-                        textEditingController: _fisrtNameTextEditingController,
+                        hintText: 'Enter First Name',
+                        title: 'First Name',
+                        textEditingController: _firstNameTextEditingController,
                       ),
                       const SizedBox(
                         height: 4,
@@ -188,7 +186,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                         height: 4,
                       ),
                       TextFieldWidget(
-                        text: widget.user.lastName,
+                        hintText: 'Enter Last Name',
                         title: 'Last Name',
                         textEditingController: _lastNameTextEditingController,
                       ),
@@ -205,7 +203,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                         height: 8,
                       ),
                       TextFieldWidget(
-                        text: widget.user.email,
+                        hintText: 'Enter Email',
                         title: 'Email',
                         textEditingController: _emailTextEditingController,
                       ),
@@ -220,12 +218,13 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                         height: 4,
                       ),
                       DatePickerTextFieldWidget(
-                          textEditingController: _dobTextEditingController,
-                          title: 'DOB',
-                          text: '',
-                          icon: Icons.date_range,
-                          initialDate: DateTime.now(),
-                          onDateChanged: (_) {}),
+                        textEditingController: _dobTextEditingController,
+                        title: 'DOB',
+                        text: '',
+                        icon: Icons.date_range,
+                        initialDate: DateTime.now(),
+                        onDateChanged: (_) {},
+                      ),
                       const Padding(
                         padding: EdgeInsets.only(left: 16),
                         child: Divider(),

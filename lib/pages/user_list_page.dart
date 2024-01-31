@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:trinity_wizards_interview_app/constants/app_color.dart';
 import 'package:trinity_wizards_interview_app/models/user.dart';
+import 'package:trinity_wizards_interview_app/pages/user_add_page.dart';
 import 'package:trinity_wizards_interview_app/pages/user_details_page.dart';
 import 'package:trinity_wizards_interview_app/repositories/fetch_user.dart';
 
 class UserListPage extends StatefulWidget {
-  const UserListPage({super.key});
+  const UserListPage({Key? key}) : super(key: key);
 
   @override
   State<UserListPage> createState() => _UserListPageState();
@@ -22,9 +23,12 @@ class _UserListPageState extends State<UserListPage> {
     _fetchUsers();
   }
 
-  void _fetchUsers() async {
+  Future<void> _fetchUsers() async {
     try {
       setState(() => loading = true);
+      await Future.delayed(
+        const Duration(seconds: 1),
+      );
       users = await fetchUsers();
       error = '';
     } catch (e) {
@@ -32,6 +36,10 @@ class _UserListPageState extends State<UserListPage> {
     } finally {
       setState(() => loading = false);
     }
+  }
+
+  Future<void> _handleRefresh() async {
+    await _fetchUsers();
   }
 
   @override
@@ -60,7 +68,14 @@ class _UserListPageState extends State<UserListPage> {
               color: AppColors.primaryColor,
               size: 36,
             ),
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => NewRecordPage(onRefresh: _handleRefresh),
+                ),
+              );
+            },
           ),
         ],
         bottom: const PreferredSize(
@@ -71,36 +86,48 @@ class _UserListPageState extends State<UserListPage> {
           ),
         ),
       ),
-      body: GridView.builder(
-        padding: const EdgeInsets.all(12),
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 16.0,
-          mainAxisSpacing: 16.0,
-        ),
-        itemCount: users.length,
-        itemBuilder: (context, index) {
-          final user = users[index];
-          return GridUser(
-            user: user,
-          );
-        },
-      ),
+      body: loading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : RefreshIndicator(
+              onRefresh: _handleRefresh,
+              child: GridView.builder(
+                padding: const EdgeInsets.all(12),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16.0,
+                  mainAxisSpacing: 16.0,
+                ),
+                itemCount: users.length,
+                itemBuilder: (context, index) {
+                  final user = users[index];
+                  return GridUser(
+                    user: user,
+                    onPop: _handleRefresh,
+                  );
+                },
+              ),
+            ),
     );
   }
 }
 
 class GridUser extends StatelessWidget {
   final User user;
+  final Function onPop;
 
-  GridUser({required this.user});
+  GridUser({required this.user, required this.onPop});
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => UserDetailsPage(user: user),
+          builder: (context) => UserDetailsPage(
+            user: user,
+            onRefresh: onPop,
+          ),
         ),
       ),
       child: Container(
