@@ -11,7 +11,7 @@ Future<List<User>> fetchUsers() async {
     final file = File('${directory.path}/data.json');
 
     if (!file.existsSync()) {
-      // File not found, copy from assets
+      
       await _copyDataFromAsset(file);
     }
 
@@ -75,9 +75,9 @@ Future<void> addNewUser(User newUser) async {
   try {
     List<User> users = await fetchUsers();
 
-    // Generate a unique ID
+    
     String newId = UniqueKey()
-        .toString(); // You can use any other method to generate a unique ID
+        .toString(); 
 
     newUser = newUser.copyWith(id: newId);
 

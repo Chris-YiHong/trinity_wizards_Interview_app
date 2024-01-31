@@ -51,7 +51,7 @@ class _NewRecordPageState extends State<NewRecordPage> {
       setState(() => loading = true);
 
       User newUser = User(
-        id: '', // The ID will be generated automatically
+        id: '', 
         firstName: _firstNameTextEditingController.text,
         lastName: _lastNameTextEditingController.text,
         email: _emailTextEditingController.text,
